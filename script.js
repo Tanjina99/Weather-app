@@ -1,21 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
     const weatherInfo = document.getElementById("weather-container");
     const searchBtn = document.getElementById("searchBtn");
-    const cityInput = document.getElementById("city");
+    const locationInput = document.getElementById("location");
 
     searchBtn.addEventListener("click", () => {
-        const city = cityInput.value; 
-        const apiKey = "af584cf69716c2079d3bc8798e9a043a"; 
+        const location = locationInput.value.trim();
+        if (location === "") {
+            return;
+        }
 
-        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`)
-            .then(res => res.json())
-            .then(data => {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=af584cf69716c2079d3bc8798e9a043a`)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json(); 
+        })
+            .then((data) => {
                 console.log(data);
-                const cityName = data.name; 
-                const temperature = Math.round(data.main.temp -272.15);
+                const cityName = data.name;
+                const temperature = Math.round(data.main.temp - 273.15);
                 const description = data.weather[0].description;
 
-                // Changing the UI depending on the data
                 const weatherHTML = `
                     <h1 id="city">${cityName}</h1>
                     <h3><span id="temp">${temperature}</span>&deg;C</h3>
@@ -24,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 weatherInfo.innerHTML = weatherHTML;
             })
-            .catch(err => console.log(err));
+            .catch((err) => {
+                console.error(err);
+            });
     });
 });
